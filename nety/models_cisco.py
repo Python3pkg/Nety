@@ -2,11 +2,11 @@ import sys
 import re
 import os
 
-from ccp_util import _IPV6_REGEX_STR_COMPRESSED1, _IPV6_REGEX_STR_COMPRESSED2
-from ccp_util import _IPV6_REGEX_STR_COMPRESSED3
-from ccp_util import IPv4Obj, IPv6Obj
-from ccp_util import range_to_list
-from ccp_abc import BaseCfgLine
+from .ccp_util import _IPV6_REGEX_STR_COMPRESSED1, _IPV6_REGEX_STR_COMPRESSED2
+from .ccp_util import _IPV6_REGEX_STR_COMPRESSED3
+from .ccp_util import IPv4Obj, IPv6Obj
+from .ccp_util import range_to_list
+from .ccp_abc import BaseCfgLine
 
 ### HUGE UGLY WARNING:
 ###   Anything in models_cisco.py could change at any time, until I remove this
@@ -1526,7 +1526,7 @@ class IOSAccessLine(BaseCfgLine):
         ## line 33 48 => [33, 48]
         retval = self.re_match_typed(r'([a-zA-Z]+\s+)*(\d+\s*\d*)$',
            group=2, result_type=str, default='')
-        tmp = map(int, retval.strip().split())
+        tmp = list(map(int, retval.strip().split()))
         return tmp
 
     def manual_exectimeout_min(self):
@@ -1543,7 +1543,7 @@ class IOSAccessLine(BaseCfgLine):
     def parse_exectimeout(self):
         retval = self.re_match_iter_typed(r'^\s*exec-timeout\s+(\d+\s*\d*)\s*$',
             group=1, result_type=str, default='')
-        tmp = map(int, retval.strip().split())
+        tmp = list(map(int, retval.strip().split()))
         return tmp
 
 

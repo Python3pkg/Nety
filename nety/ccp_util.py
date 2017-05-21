@@ -4,7 +4,7 @@ import sys
 import re
 import os
 
-from protocol_values import ASA_TCP_PORTS, ASA_UDP_PORTS
+from .protocol_values import ASA_TCP_PORTS, ASA_UDP_PORTS
 from dns.exception import DNSException
 from dns.resolver import Resolver
 from dns import reversename, query
@@ -197,7 +197,7 @@ class IPv4Obj(object):
         ## For Python3 iteration...
         return self.network_object.__next__()
 
-    def next(self):
+    def __next__(self):
         ## For Python2 iteration...
         return self.network_object.__next__()
 
@@ -402,7 +402,7 @@ class IPv6Obj(object):
         ## For Python3 iteration...
         return self.network_object.__next__()
 
-    def next(self):
+    def __next__(self):
         ## For Python2 iteration...
         return self.network_object.__next__()
 
@@ -560,14 +560,14 @@ class L4Object(object):
             self.port_list = [int(ports.get(port_spec, port_spec))]
         elif 'range ' in port_spec:
             port_tmp = re.split('\s+', port_spec)[1:]
-            self.port_list = range(int(ports.get(port_tmp[0], port_tmp[0])), 
-                int(ports.get(port_tmp[1], port_tmp[1])) + 1)
+            self.port_list = list(range(int(ports.get(port_tmp[0], port_tmp[0])), 
+                int(ports.get(port_tmp[1], port_tmp[1])) + 1))
         elif 'lt ' in port_spec:
             port_str = re.split('\s+', port_spec)[-1]
-            self.port_list = range(1, int(ports.get(port_str, port_str)))
+            self.port_list = list(range(1, int(ports.get(port_str, port_str))))
         elif 'gt ' in port_spec:
             port_str = re.split('\s+', port_spec)[-1]
-            self.port_list = range(int(ports.get(port_str, port_str)) + 1, 65535)
+            self.port_list = list(range(int(ports.get(port_str, port_str)) + 1, 65535))
         elif 'neq ' in port_spec:
             port_str = re.split('\s+', port_spec)[-1]
             tmp = set(range(1, 65535))
@@ -653,13 +653,13 @@ def range_to_list( inputRange):
 
     for match in re.findall(r"[0-9]{1,4}-[0-9]{1,4}", inputRange):
       values = match.split("-")
-      expandlist = range(int(values[0]), int(values[1])+1)
+      expandlist = list(range(int(values[0]), int(values[1])+1))
       delimiter = ","
       expandlist = delimiter.join(str(x) for x in expandlist)
       inputRange = inputRange.replace(match, expandlist )
 
     if "," in inputRange:
         inputRange = inputRange.split(",")
-        return map(int, inputRange)
+        return list(map(int, inputRange))
     else:
         raise NotImplementedError("This should never happen. you shouldn't be here.")

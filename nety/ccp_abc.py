@@ -4,7 +4,7 @@ from copy import deepcopy
 import re
 import os
 
-from ccp_util import IPv4Obj
+from .ccp_util import IPv4Obj
 
 """ ccp_abc.py - Parse, Query, Build, and Modify IOS-style configurations
      Copyright (C) 2014-2015 David Michael Pennington
@@ -34,9 +34,7 @@ from ccp_util import IPv4Obj
 ##
 
 
-class BaseCfgLine(object):
-    __metaclass__ = ABCMeta
-
+class BaseCfgLine(object, metaclass=ABCMeta):
     def __init__(self, text="", comment_delimiter="!"):
         """Accept an IOS line number and initialize family relationship
         attributes"""
@@ -261,14 +259,14 @@ class BaseCfgLine(object):
            !
            >>>
         """
-        cobjs = filter(methodcaller('re_search', linespec), self.children)
-        retval = map(attrgetter('text'), cobjs)
+        cobjs = list(filter(methodcaller('re_search', linespec), self.children))
+        retval = list(map(attrgetter('text'), cobjs))
         # Delete the children
-        map(methodcaller('delete'), cobjs)
+        list(map(methodcaller('delete'), cobjs))
         return retval
 
     def has_child_with(self, linespec):
-        return bool(filter(methodcaller('re_search', linespec), self.children))
+        return bool(list(filter(methodcaller('re_search', linespec), self.children)))
 
     def insert_before(self, insertstr):
         """insert_before()"""
@@ -690,7 +688,7 @@ class BaseCfgLine(object):
         a list of all ancestors in the direct line as well as this obj.  
         Cousins or aunts / uncles are *not* returned.  Note: children of this 
         object are *not* returned."""
-        retval = map(lambda x: x.text, sorted(self.all_parents))
+        retval = [x.text for x in sorted(self.all_parents)]
         retval.append(self.text)
         return retval
 

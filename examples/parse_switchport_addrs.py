@@ -24,11 +24,11 @@ def switchport_vlans(parse):
         vlans_trunk = obj.re_match_iter_typed(r'^\s+switchport\strunk\sallowed\svlan\s(\S+)', default='')
         vlans_str = vlans_access or vlans_trunk
         try:
-            vlans = map(int, map(methodcaller('strip'), vlans_str.split(','))) # NOTE: this intentionally fails on 1,3-11,15
+            vlans = list(map(int, list(map(methodcaller('strip'), vlans_str.split(','))))) # NOTE: this intentionally fails on 1,3-11,15
             intf = obj.re_match_typed(INTF_RE)
             retval[intf] = vlans
             access[intf] = bool(vlans_access)
-        except Exception, e:
+        except Exception as e:
             raise ValueError("FATAL error while parsing switchport vlans on {0}: {1}".format(obj, e))
     return retval, access
 
@@ -74,6 +74,6 @@ for intf in sorted(intfs):
     for vlan in vlan_list:
         addr = vlans.get(vlan, 'ERROR')
         if access.get(intf, False):
-            print("{0}     {1}".format(intf, addr))
+            print(("{0}     {1}".format(intf, addr)))
         else:
-            print("{0}.{1}     {2}".format(intf, vlan, addr))
+            print(("{0}.{1}     {2}".format(intf, vlan, addr)))

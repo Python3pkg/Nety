@@ -8,30 +8,30 @@ import sys
 import re
 import os
 
-from models_cisco import IOSHostnameLine, IOSRouteLine, IOSIntfLine
-from models_cisco import IOSAccessLine, IOSIntfGlobal
-from models_cisco import IOSAaaLoginAuthenticationLine
-from models_cisco import IOSAaaEnableAuthenticationLine
-from models_cisco import IOSAaaCommandsAuthorizationLine
-from models_cisco import IOSAaaCommandsAccountingLine
-from models_cisco import IOSAaaExecAccountingLine
-from models_cisco import IOSAaaGroupServerLine
-from models_cisco import IOSCfgLine
+from .models_cisco import IOSHostnameLine, IOSRouteLine, IOSIntfLine
+from .models_cisco import IOSAccessLine, IOSIntfGlobal
+from .models_cisco import IOSAaaLoginAuthenticationLine
+from .models_cisco import IOSAaaEnableAuthenticationLine
+from .models_cisco import IOSAaaCommandsAuthorizationLine
+from .models_cisco import IOSAaaCommandsAccountingLine
+from .models_cisco import IOSAaaExecAccountingLine
+from .models_cisco import IOSAaaGroupServerLine
+from .models_cisco import IOSCfgLine
 
-from models_asa import ASAObjGroupNetwork
-from models_asa import ASAObjGroupService
-from models_asa import ASAHostnameLine
-from models_asa import ASAObjNetwork
-from models_asa import ASAObjService
-from models_asa import ASAIntfGlobal
-from models_asa import ASAIntfLine
-from models_asa import ASACfgLine
-from models_asa import ASAName
-from models_asa import ASAAclLine
+from .models_asa import ASAObjGroupNetwork
+from .models_asa import ASAObjGroupService
+from .models_asa import ASAHostnameLine
+from .models_asa import ASAObjNetwork
+from .models_asa import ASAObjService
+from .models_asa import ASAIntfGlobal
+from .models_asa import ASAIntfLine
+from .models_asa import ASACfgLine
+from .models_asa import ASAName
+from .models_asa import ASAAclLine
 
-from models_junos import JunosCfgLine
+from .models_junos import JunosCfgLine
 
-from version import __version__ as __netyversion__
+from .version import __version__ as __netyversion__
 
 
 """ nety.py - Parse, Query, Build, and Modify IOS-style configurations
@@ -220,7 +220,7 @@ class CiscoConfParse(object):
                     raise ValueError("FATAL: '{}' is an unknown syntax".format(syntax))
 
             except IOError:
-                print("[FATAL] CiscoConfParse could not open '%s'" % config)
+                print(("[FATAL] CiscoConfParse could not open '%s'" % config))
                 raise RuntimeError
         else:
             raise RuntimeError("[FATAL] CiscoConfParse() received" + 
@@ -433,7 +433,7 @@ class CiscoConfParse(object):
         elif exactmatch:
             # Return objects whose text attribute matches linespec exactly
             linespec_re = re.compile("^{0}$".format(dnaspec))
-        return list(filter(lambda obj: linespec_re.search(obj.dna), self.ConfigObjs))
+        return list([obj for obj in self.ConfigObjs if linespec_re.search(obj.dna)])
 
 
     def find_objects(self, linespec, exactmatch=False, ignore_ws=False):
@@ -847,8 +847,7 @@ class CiscoConfParse(object):
             parentspec = self._build_space_tolerant_regex(parentspec)
             childspec = self._build_space_tolerant_regex(childspec)
 
-        return list(filter(lambda x: x.re_search_children(childspec), 
-            self.find_objects(parentspec)))
+        return list([x for x in self.find_objects(parentspec) if x.re_search_children(childspec)])
 
     def find_parents_w_child(self, parentspec, childspec, ignore_ws=False):
         """Parse through all children matching childspec, and return a list of
@@ -1839,7 +1838,7 @@ class CiscoConfParse(object):
         tmp = self._find_line_OBJ(linespec)
         if (uncfgspec is None):
             uncfgspec = linespec
-        a_lines = map(lambda x: x.text, tmp)
+        a_lines = [x.text for x in tmp]
         a = CiscoConfParse(a_lines)
 
         b = CiscoConfParse(cfgspec, factory=False)
@@ -1877,15 +1876,15 @@ class CiscoConfParse(object):
                         for obj in adiff_level.parents:
                             a_lines.append(obj.text)
                             a_linenums.append(obj.linenum)
-                            a_lines.extend(map(lambda x: getattr(x, 'text'), obj.all_children))
-                            a_linenums.extend(map(lambda x: getattr(x, 'linenum'), obj.all_children))
+                            a_lines.extend([getattr(x, 'text') for x in obj.all_children])
+                            a_linenums.extend([getattr(x, 'linenum') for x in obj.all_children])
                     b_lines = list()
                     b_linenums = list()
                     for obj in bdiff_level.parents:
                         b_lines.append(obj.text)
                         b_linenums.append(obj.linenum)
-                        b_lines.extend(map(lambda x: getattr(x, 'text'), obj.all_children))
-                        b_linenums.extend(map(lambda x: getattr(x, 'linenum'), obj.all_children))
+                        b_lines.extend([getattr(x, 'text') for x in obj.all_children])
+                        b_linenums.extend([getattr(x, 'linenum') for x in obj.all_children])
                 else:
                     if ignore_order:
                         a_nonparents = getattr(adiff_level, attr)
@@ -1895,14 +1894,12 @@ class CiscoConfParse(object):
                         a, a_lines, a_linenums = self._sequence_nonparent_lines(a_nonparents, 
                             b_nonparents)
                     else:
-                        a_lines = map(lambda x: getattr(x, 'text'), 
-                            getattr(adiff_level, attr))
+                        a_lines = [getattr(x, 'text') for x in getattr(adiff_level, attr)]
                         # Build a map from a_lines index to a.ConfigObjs index
-                        a_linenums = map(lambda x: getattr(x, 'linenum'), getattr(adiff_level, attr))
-                    b_lines = map(lambda x: getattr(x, 'text'), 
-                        getattr(bdiff_level, attr))
+                        a_linenums = [getattr(x, 'linenum') for x in getattr(adiff_level, attr)]
+                    b_lines = [getattr(x, 'text') for x in getattr(bdiff_level, attr)]
                     # Build a map from b_lines index to b.ConfigObjs index
-                    b_linenums = map(lambda x: getattr(x, 'linenum'), getattr(bdiff_level, attr))
+                    b_linenums = [getattr(x, 'linenum') for x in getattr(bdiff_level, attr)]
 
                 ###
                 ### Mark diffs here
@@ -1940,7 +1937,7 @@ class CiscoConfParse(object):
                         try:
                             aobj = aobjs[idx]
                             # set aparent_text to all parents' text (joined)
-                            aparent_text = ' '.join(map(lambda x: x.text, aobj.all_parents))
+                            aparent_text = ' '.join([x.text for x in aobj.all_parents])
                         except IndexError:
                             # aobj doesn't exist, if we get an index error
                             #    fake some data...
@@ -1953,7 +1950,7 @@ class CiscoConfParse(object):
                         try:
                             bobj = bobjs[idx]
                             # set bparent_text to all parents' text (joined)
-                            bparent_text = ' '.join(map(lambda x: x.text, bobj.all_parents))
+                            bparent_text = ' '.join([x.text for x in bobj.all_parents])
                         except IndexError:
                             # bobj doesn't exist, if we get an index error
                             #    fake some data...
@@ -2130,7 +2127,7 @@ class CiscoConfParse(object):
         elif exactmatch:
             # Return objects whose text attribute matches linespec exactly
             linespec_re = re.compile("^%s$" % linespec)
-        return list(filter(lambda obj: linespec_re.search(obj.text), self.ConfigObjs))
+        return list([obj for obj in self.ConfigObjs if linespec_re.search(obj.text)])
 
     def _find_sibling_OBJ(self, lineobject):
         """SEMI-PRIVATE: Takes a singe object and returns a list of sibling
@@ -2255,7 +2252,7 @@ class IOSConfigList(MutableSequence):
             _log.debug("self._list = {0}".format(self._list))
 
     def has_line_with(self, linespec):
-        return bool(filter(methodcaller('re_search', linespec), self._list))
+        return bool(list(filter(methodcaller('re_search', linespec), self._list)))
 
     def insert_before(self, robj, val, atomic=False):
         ## Insert something before robj
@@ -2359,7 +2356,7 @@ class IOSConfigList(MutableSequence):
 
     def _banner_mark_regex(self, REGEX):
         # Build a list of all leading banner lines
-        banner_objs = list(filter(lambda obj: REGEX.search(obj.text), self._list))
+        banner_objs = list([obj for obj in self._list if REGEX.search(obj.text)])
 
         BANNER_STR_RE = r'^(?:(?P<btype>(?:set\s+)*banner\s\w+\s+)(?P<bchar>\S)(?:\S)?)$'
         for parent in banner_objs:
@@ -2454,7 +2451,7 @@ class IOSConfigList(MutableSequence):
             if (indent<max_indent) and is_config_line:
                 parent = None
                 # walk parents and intelligently prune stale parents
-                stale_parent_idxs = filter(lambda ii: ii>=indent, sorted(parents.keys(), reverse=True))
+                stale_parent_idxs = [ii for ii in sorted(list(parents.keys()), reverse=True) if ii>=indent]
                 for parent_idx in stale_parent_idxs:
                     del parents[parent_idx]
             else:
@@ -2646,7 +2643,7 @@ class ASAConfigList(MutableSequence):
         self._list = self._bootstrap_obj_init(list(map(attrgetter('text'), self._list)))
 
     def has_line_with(self, linespec):
-        return bool(filter(methodcaller('re_search', linespec), self._list))
+        return bool(list(filter(methodcaller('re_search', linespec), self._list)))
 
     def insert_before(self, robj, val, atomic=False):
         ## Insert something before robj
@@ -2777,7 +2774,7 @@ class ASAConfigList(MutableSequence):
             if (indent<max_indent) and is_config_line:
                 parent = None
                 # walk parents and intelligently prune stale parents
-                stale_parent_idxs = filter(lambda ii: ii>=indent, sorted(parents.keys(), reverse=True))
+                stale_parent_idxs = [ii for ii in sorted(list(parents.keys()), reverse=True) if ii>=indent]
                 for parent_idx in stale_parent_idxs:
                     del parents[parent_idx]
             else:
@@ -3028,7 +3025,7 @@ if __name__ == '__main__':
                  opts.arg1.split(","))
     elif opts.method == "decrypt":
         pp = CiscoPassword()
-        print(pp.decrypt(opts.arg1))
+        print((pp.decrypt(opts.arg1)))
         exit(1)
     elif opts.method == "help":
         print("Valid methods and their arguments:")
@@ -3038,8 +3035,8 @@ if __name__ == '__main__':
         print("   find_blocks:            arg1=linespec")
         print("   find_parents_w_child:   arg1=parentspec  arg2=childspec")
         print("   find_parents_wo_child:  arg1=parentspec  arg2=childspec")
-        print("   req_cfgspec_excl_diff:  arg1=linespec    arg2=uncfgspec" + \
-            "   arg3=cfgspec")
+        print(("   req_cfgspec_excl_diff:  arg1=linespec    arg2=uncfgspec" + \
+            "   arg3=cfgspec"))
         print("   req_cfgspec_all_diff:   arg1=cfgspec")
         print("   decrypt:                arg1=encrypted_passwd")
         exit(1)

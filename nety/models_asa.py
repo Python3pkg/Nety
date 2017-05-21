@@ -1,9 +1,9 @@
 import re
 
-from protocol_values import ASA_TCP_PORTS, ASA_UDP_PORTS, ASA_IP_PROTOCOLS
-from ccp_abc import BaseCfgLine
-from ccp_util import L4Object
-from ccp_util import IPv4Obj
+from .protocol_values import ASA_TCP_PORTS, ASA_UDP_PORTS, ASA_IP_PROTOCOLS
+from .ccp_abc import BaseCfgLine
+from .ccp_util import L4Object
+from .ccp_util import IPv4Obj
 
 ### HUGE UGLY WARNING:
 ###   Anything in models_asa.py could change at any time, until I remove this

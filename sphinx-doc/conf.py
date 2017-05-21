@@ -55,7 +55,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Nety'
+project = 'Nety'
 copyright = nety.__copyright__
 
 # The version info for the project you're documenting, acts as replacement for
@@ -194,8 +194,8 @@ htmlhelp_basename = 'netydoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'nety.tex', u'Nety Documentation',
-   u'YtenSoftware', 'manual'),
+  ('index', 'nety.tex', 'Nety Documentation',
+   'YtenSoftware', 'manual'),
 ]
 
 autoclass_content = 'both'

@@ -844,7 +844,7 @@ def testValues_IOSCfgLine_all_parents(parse_c01):
     with patch(__name__+'.'+'IOSCfgLine') as mockobj:
         vals = [('policy-map QOS_1', 0), (' class SILVER', 4)]
         # fakeobj pretends to be an IOSCfgLine instance at the given line number
-        for idx, fakeobj in enumerate(map(deepcopy, repeat(mockobj, len(vals)))):
+        for idx, fakeobj in enumerate(list(map(deepcopy, repeat(mockobj, len(vals))))):
             fakeobj.text = vals[idx][0]
             fakeobj.linenum = vals[idx][1]
             fakeobj.classname = "IOSCfgLine"
@@ -1014,7 +1014,7 @@ def testValues_insert_after_atomic_01(parse_c01):
         50: ' shutdown',
         55: ' shutdown',
     }
-    for idx, result_correct in result_correct_dict.items():
+    for idx, result_correct in list(result_correct_dict.items()):
         assert parse_c01.ConfigObjs[idx].text==result_correct
 
         # The parent line should be immediately above it
@@ -1050,7 +1050,7 @@ def testValues_insert_after_nonatomic_01(parse_c01):
         50: ' shutdown',
         55: ' shutdown',
     }
-    for idx, result_correct in result_correct_dict.items():
+    for idx, result_correct in list(result_correct_dict.items()):
         assert parse_c01.ConfigObjs[idx].text==result_correct
 
 def testValues_insert_after_nonatomic_02(parse_c01):
@@ -1247,7 +1247,7 @@ def testValues_find_objects_factory_01(parse_c01_factory):
         ## Build fake IOSIntfLine objects to validate unit tests...
         result_correct = list()
         # deepcopy a unique mock for every val with itertools.repeat()
-        mockobjs = map(deepcopy, repeat(mockobj, len(vals)))
+        mockobjs = list(map(deepcopy, repeat(mockobj, len(vals))))
         # mock pretends to be an IOSCfgLine so we can test against it
         for idx, obj in enumerate(mockobjs):
             obj.text     = vals[idx][0]  # Check the text

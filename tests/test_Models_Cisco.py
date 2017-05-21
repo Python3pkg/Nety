@@ -46,7 +46,7 @@ def testVal_IOSCfgLine_is_intf():
         'interface ATM5/0/0': True,
         'interface ATM5/0/0.32 point-to-point': True,
     }
-    for cfgline, result_correct in result_map.items():
+    for cfgline, result_correct in list(result_map.items()):
         cfg = CiscoConfParse([cfgline], factory=True)
         obj = cfg.ConfigObjs[0]
         assert obj.is_intf is result_correct
@@ -60,7 +60,7 @@ def testVal_IOSCfgLine_is_subintf():
         'interface ATM5/0/0': False,
         'interface ATM5/0/0.32 point-to-point': True,
     }
-    for cfgline, result_correct in result_map.items():
+    for cfgline, result_correct in list(result_map.items()):
         cfg = CiscoConfParse([cfgline], factory=True)
         obj = cfg.ConfigObjs[0]
         assert obj.is_subintf is result_correct
@@ -76,7 +76,7 @@ def testVal_IOSCfgLine_is_loopback_intf():
         'interface ATM5/0/0': False,
         'interface ATM5/0/0.32 point-to-point': False,
     }
-    for cfgline, result_correct in result_map.items():
+    for cfgline, result_correct in list(result_map.items()):
         cfg = CiscoConfParse([cfgline], factory=True)
         obj = cfg.ConfigObjs[0]
         assert obj.is_loopback_intf is result_correct
@@ -102,7 +102,7 @@ def testVal_IOSCfgLine_is_virtual_intf():
         'interface Vlan123': True,
         'interface Vlan 123': True,
     }
-    for cfgline, result_correct in result_map.items():
+    for cfgline, result_correct in list(result_map.items()):
         cfg = CiscoConfParse([cfgline], factory=True, syntax='ios')
         obj = cfg.ConfigObjs[0]
         assert obj.is_virtual_intf is result_correct
@@ -124,7 +124,7 @@ def testVal_IOSCfgLine_is_ethernet_intf():
         'interface ATM5/0/0': False,
         'interface ATM5/0/0.32 point-to-point': False,
     }
-    for cfgline, result_correct in result_map.items():
+    for cfgline, result_correct in list(result_map.items()):
         cfg = CiscoConfParse([cfgline], factory=True)
         obj = cfg.ConfigObjs[0]
         assert obj.is_ethernet_intf is result_correct
@@ -148,7 +148,7 @@ def testVal_IOSIntfLine_name():
         'interface Vlan123': "Vlan123",
         'interface Vlan 123': "Vlan 123",
     }
-    for cfgline, result_correct in result_map.items():
+    for cfgline, result_correct in list(result_map.items()):
         cfg = CiscoConfParse([cfgline], factory=True)
         obj = cfg.ConfigObjs[0]
         assert obj.name==result_correct
@@ -301,7 +301,7 @@ def testVal_IOSIntfLine_is_abbv_as(parse_c03_factory):
         'interface ATM5/0/0.32 point-to-point': ('At 5/0/0', False),
         'interface ATM5/0/1': ('atm5/0/1', True),
     }
-    for intf_text, vals in params.items():
+    for intf_text, vals in list(params.items()):
         abbv, result_correct = vals[0], vals[1]
         intfobj = cfg.find_objects(intf_text, exactmatch=True)[0]
         assert intfobj.is_abbreviated_as(abbv) is result_correct
@@ -416,7 +416,7 @@ def testVal_IOSIntfLine_port_type():
         'interface ATM5/0/0.32 point-to-point': "ATM",
         'interface Vlan123': "Vlan",
     }
-    for cfgline, result_correct in result_map.items():
+    for cfgline, result_correct in list(result_map.items()):
         cfg = CiscoConfParse([cfgline], factory=True)
         obj = cfg.ConfigObjs[0]
         assert obj.port_type==result_correct

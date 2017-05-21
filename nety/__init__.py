@@ -1,4 +1,4 @@
-from nety import *
+from .nety import *
 
 """ __init__.py - Parse, Query, Build, and Modify IOS-style configurations
      Copyright (C) 2007-2015 David Michael Pennington
